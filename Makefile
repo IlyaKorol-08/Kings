@@ -9,19 +9,20 @@ fmt:
 
 # --- add
 
-add.o: add.h add.c
-	gcc -g -c add.c -o add.o
+integral_solver.o: integral_solver.h integral_solver.c
+	gcc -g -c integral_solver.c -o integral_solver.o
 
-add.a: add.o
-	ar rc add.a add.o
+integral_solver.a: integral_solver.o
+	ar rc integral_solver.a integral_solver.o
 
-add_test.o: add_test.c
-	gcc -g -c add_test.c -o add_test.o
+integral_test.o: integral_test.c
+	gcc -g -c integral_test.c -o integral_test.o
 
-add_test: add_test.o add.a
-	gcc -g -static -o add_test add_test.o add.a
+integral_test: integral_test.o integral_solver.a
+	gcc -g -static -o integral_test integral_test.o -L. -l:integral_solver.a -lm
 
 # ---
 
-test: add_test
-	./add_test
+test: integral_test
+	./integral_test
+	
