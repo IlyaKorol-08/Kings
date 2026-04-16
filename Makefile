@@ -7,21 +7,17 @@ check_fmt:
 fmt:
 	clang-format -style=LLVM -i `find -regex ".+\.[ch]"`
 
-# --- add
+quadratic_solver.o: quadratic_solver.h quadratic_solver.c
+	gcc -g -c quadratic_solver.c -o quadratic_solver.o
 
-add.o: add.h add.c
-	gcc -g -c add.c -o add.o
+quadratic_solver.a: quadratic_solver.o
+	ar rc quadratic_solver.a quadratic_solver.o
 
-add.a: add.o
-	ar rc add.a add.o
+quadratic_test.o: quadratic_test.c quadratic_solver.h
+	gcc -g -c quadratic_test.c -o quadratic_test.o
 
-add_test.o: add_test.c
-	gcc -g -c add_test.c -o add_test.o
+quadratic_test: quadratic_test.o quadratic_solver.a
+	gcc -g -static -o quadratic_test quadratic_test.o -L. -l:quadratic_solver.a -lm
 
-add_test: add_test.o add.a
-	gcc -g -static -o add_test add_test.o add.a
-
-# ---
-
-test: add_test
-	./add_test
+test: quadratic_test
+	./quadratic_test
