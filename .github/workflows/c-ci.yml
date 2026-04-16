@@ -1,30 +1,19 @@
-# Файл: .github/workflows/c-ci.yml (находится в ветке main)
-name: Общий CI для C-программ
+# Файл: .github/workflows/run-tests.yml (находится в ветке feature/lab-01)
+name: Запуск тестов лабораторной работы
 
 on:
-  # Триггер workflow_call позволяет вызывать этот файл из других веток или репозиториев
-  workflow_call:
-    inputs:
-      # Ожидаем, что вызывающая ветка передаст, какую цель Makefile запускать
-      make-target:
-        required: false
-        type: string
-        default: 'all' # По умолчанию собираем всё
+  push:
+    branches: [ "number_4/*" ] # Запускаем при пуше в любую feature-ветку
+  pull_request:
+    branches: [ "main" ]      # Запускаем при создании PR в main
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      # 1. Скачать код из той ветки, которая вызвала CI
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # 2. Установить компилятор и утилиты (gcc, make)
-      - name: Setup build environment
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential
-
-      # 3. Запустить Makefile с нужной целью
-      - name: Run Make
-        run: make ${{ inputs.make-target }}
+  call-common-ci:
+    # Ссылка на общий файл из ветки main
+    uses: <IlyaKorol-08>/<Kings>/.github/workflows/c-ci.yml@main
+    with:
+      # Если для этой лабы нужно запустить не 'make all', а что-то другое,
+      # можно передать другой параметр, например 'make test_sort'
+      make-target: 'all'
+    # Разрешаем общему воркфлоу использовать токен для чекаута кода этой ветки
+    secrets: inherit 
