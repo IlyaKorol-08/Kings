@@ -8,13 +8,17 @@ PROGRAMS = $(MAIN_SRCS:.c=)
 
 .PHONY: all clean check_fmt fmt test
 
-all: $(LIBRARY) $(PROGRAMS)
+all: $(LIBRARY)
+	@for src in $(MAIN_SRCS); do \
+		prog=$${src%.c}; \
+		gcc -g -o $$prog $$src -L. -lproject; \
+	done
 
 clean:
 	rm -rf *.o *.a $(PROGRAMS) $(TEST_TARGETS)
 
 check_fmt:
-	clang-format -style=LLVM --dry-run --Werror *.c *.h || true
+	clang-format -style=LLVM --dry-run --Werror *.c *.h
 
 fmt:
 	clang-format -style=LLVM -i *.c *.h
@@ -26,12 +30,8 @@ $(LIBRARY): $(LIB_OBJS)
 %.o: %.c
 	gcc -g -c $< -o $@
 
-# --- programs
-$(PROGRAMS): %: %.o $(LIBRARY)
-	gcc -g -o $@ $< -L. -lproject
-
 # --- tests
-test: $(TEST_TARGETS)
+test: $(LIBRARY) $(TEST_TARGETS)
 	@for test in $(TEST_TARGETS); do ./$$test; done
 
 $(TEST_TARGETS): %: %.o $(LIBRARY)
