@@ -2,19 +2,16 @@ SRCS = $(wildcard *.c)
 TEST_SRCS = $(wildcard *_test.c)
 MAIN_SRCS = $(filter-out $(TEST_SRCS), $(SRCS))
 TEST_TARGETS = $(TEST_SRCS:.c=)
-LIBRARY = libproject.a
+LIBRARY = project.a
 LIB_OBJS = $(MAIN_SRCS:.c=.o)
+PROGRAMS = $(MAIN_SRCS:.c=)
 
 .PHONY: all clean check_fmt fmt test
 
-all: $(LIBRARY)
-	@for src in $(MAIN_SRCS); do \
-		prog=$${src%.c}; \
-		gcc -g -o $$prog $$src -L. -lproject; \
-	done
+all: $(LIBRARY) $(PROGRAMS)
 
 clean:
-	rm -rf *.o *.a $(TEST_TARGETS) $(MAIN_SRCS:.c=)
+	rm -rf *.o *.a $(PROGRAMS) $(TEST_TARGETS)
 
 check_fmt:
 	clang-format -style=LLVM --dry-run --Werror *.c *.h || true
@@ -28,6 +25,10 @@ $(LIBRARY): $(LIB_OBJS)
 
 %.o: %.c
 	gcc -g -c $< -o $@
+
+# --- programs
+$(PROGRAMS): %: %.o $(LIBRARY)
+	gcc -g -o $@ $< -L. -lproject
 
 # --- tests
 test: $(TEST_TARGETS)
