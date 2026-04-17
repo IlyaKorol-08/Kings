@@ -1,20 +1,18 @@
-# Файл: .github/workflows/run-tests.yml (находится в ветке feature/lab-01)
 name: Запуск тестов лабораторной работы
 
 on:
   push:
-    branches: [ "number_4" ] # Запускаем при пуше в ветку number_4
+    branches: [ "number_4" ]
   pull_request:
-    branches: [ "main" ]      # Запускаем при создании PR в main
+    branches: [ "main" ]
 
 jobs:
   call-common-ci:
-    # Ссылка на общий файл из ветки main
+
     uses: IlyaKorol-08/Kings/.github/workflows/c-ci.yml@main
     with:
-      # Если для этой лабы нужно запустить не 'make all', а что-то другое,
-      # можно передать другой параметр, например 'make test_sort'
+
       make-target: 'all'
       run-tests: true
-    # Разрешаем общему воркфлоу использовать токен для чекаута кода этой ветки
+
     secrets: inherit 
