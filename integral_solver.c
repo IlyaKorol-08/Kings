@@ -31,6 +31,15 @@ double integral(func f, double a, double b){
         return 0;
     }
 
+    double sign = 1.0;
+    if (a > b)
+    {
+        double tmp = a;
+        a = b;
+        b = tmp;
+        sign = -1.0;
+    }
+
     double h = (b-a)/N; 
 
     double sum = 0.0;
@@ -42,5 +51,5 @@ double integral(func f, double a, double b){
         sum+=f(x);
     }
 
-    return h * sum;
+    return sign * h * sum;
 }
