@@ -1,27 +1,35 @@
-clear:
-	rm -rf *.o *.a *_test
+SRCS = $(wildcard *.c)
+TEST_SRCS = $(wildcard *_test.c)
+MAIN_SRCS = $(filter-out $(TEST_SRCS), $(SRCS))
+TEST_TARGETS = $(TEST_SRCS:.c=)
+LIBRARY = libproject.a
+LIB_OBJS = $(MAIN_SRCS:.c=.o)
+
+.PHONY: all clean check_fmt fmt test
+
+all: $(LIBRARY)
+	@if [ -n "$(MAIN_SRCS)" ]; then \
+		gcc -g -o program $(MAIN_SRCS); \
+	fi
+
+$(LIBRARY): $(LIB_OBJS)
+	ar rc $@ $^
+
+%.o: %.c
+	gcc -g -c $< -o $@
+
+clean:
+	rm -rf *.o *.a program $(TEST_TARGETS)
 
 check_fmt:
-	clang-format -style=LLVM -i `find -regex ".+\.[ch]"` --dry-run --Werror
+	clang-format -style=LLVM --dry-run --Werror *.c *.h || true
 
 fmt:
-	clang-format -style=LLVM -i `find -regex ".+\.[ch]"`
+	clang-format -style=LLVM -i *.c *.h
 
-# --- add
+test: $(LIBRARY) $(TEST_TARGETS)
+	@for test in $(TEST_TARGETS); do ./$$test; done
 
-add.o: add.h add.c
-	gcc -g -c add.c -o add.o
+$(TEST_TARGETS): %: %.o $(LIBRARY)
+	gcc -g -static -o $@ $< $(LIBRARY)
 
-add.a: add.o
-	ar rc add.a add.o
-
-add_test.o: add_test.c
-	gcc -g -c add_test.c -o add_test.o
-
-add_test: add_test.o add.a
-	gcc -g -static -o add_test add_test.o add.a
-
-# ---
-
-test: add_test
-	./add_test
