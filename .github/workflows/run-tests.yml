@@ -1,0 +1,14 @@
+name: Запуск тестов лабораторной работы
+
+on:
+  push:
+    branches: [ "number_4" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  call-common-ci:
+    uses: IlyaKorol-08/Kings/.github/workflows/c-ci.yml@main
+    with:
+      make-target: 'all'
+    secrets: inherit 
