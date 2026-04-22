@@ -9,12 +9,6 @@ void Proverka (int count)
         printf("Стек пуст\n");
     }
 }
-void Print(int *arr, int size) 
-{
-    for (int i = 0; i < size; i++) {
-        printf("%d ", arr[i]); 
-    }
-}
 
 void Add(int Stek[], int *count, int *number_of_elements, int new) {
     if (*number_of_elements < *count) {

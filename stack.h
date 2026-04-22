@@ -4,7 +4,6 @@
 #define SIZE(stack) (sizeof(stack) / sizeof((stack)[0]))
 
 void Proverka (int count);
-void Print(int *arr, int size);
 void Add(int Stek[], int *count, int *number_of_elements, int new);
 void Delete(int Stek[], int *number_of_elements);
 
