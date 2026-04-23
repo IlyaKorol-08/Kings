@@ -1,0 +1,32 @@
+name: Общий CI для C-программ
+
+on:
+  workflow_call:
+    inputs:
+      make-target:
+        required: false
+        type: string
+        default: 'all'
+      run-tests:
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang-format
+
+      - name: Build target
+        run: make ${{ inputs.make-target }}
+
+      - name: Run tests
+        if: ${{ inputs.run-tests }}
+        run: make test
